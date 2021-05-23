@@ -1,5 +1,7 @@
 import React, { useState, useEffect, Fragment } from "react";
 import TaskService from "./services/service.task"
+import { Spinner } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Global from "./styles/global";
 
@@ -16,10 +18,10 @@ function App() {
   }]);
 
   useEffect(() => {
-    let payload=10
+    let payload = 10
     TaskService.getMyTask().then((response) => {
       console.log(response.headers['request-duration'], DEAD_TIME)
-     
+
       if (response.headers['request-duration'] > DEAD_TIME) {
         console.warn('Please try after some times! request is taking too much time')
       } else {
@@ -28,13 +30,17 @@ function App() {
     }
     ).catch((err) => console.log('Error', err));
 
-    
+
   }, [])
 
   console.log('schoolName', schoolName)
+
   return (
     <>
       <Global />
+      <Spinner animation="border" role="status">
+        <span className="sr-only">Loading...</span>
+      </Spinner>
       <Home boxData={schoolName} />
     </>
   );
