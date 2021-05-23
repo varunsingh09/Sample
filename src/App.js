@@ -1,46 +1,47 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect } from "react";
 import TaskService from "./services/service.task"
-import { Spinner } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 import Global from "./styles/global";
 
 import Home from "./pages/Home/Home";
+import Spinner from "./pages/Home/Spinner"
 export const DEAD_TIME = 1000
 
-var schoolNameContext = React.createContext(null);
+//var schoolNameContext = React.createContext(null);
 
 
 function App() {
-  var [schoolName, setSchoolName] = useState([{
+  const [schoolName, setSchoolName] = useState([{
     title: "accusamus beatae ad facilis cum similique qui sunt",
     thumbnailUrl: "https://via.placeholder.com/150/92c952"
   }]);
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     let payload = 10
+    setLoading(true)
     TaskService.getMyTask().then((response) => {
-      console.log(response.headers['request-duration'], DEAD_TIME)
+      //console.log(response.headers['request-duration'], DEAD_TIME)
 
       if (response.headers['request-duration'] > DEAD_TIME) {
         console.warn('Please try after some times! request is taking too much time')
       } else {
+        setLoading(false)
         setSchoolName(response.data)
       }
     }
-    ).catch((err) => console.log('Error', err));
+    ).catch((err) => {
+      setLoading(false)
+      console.log('Error', err)
+    });
 
 
   }, [])
 
-  console.log('schoolName', schoolName)
 
   return (
     <>
       <Global />
-      <Spinner animation="border" role="status">
-        <span className="sr-only">Loading...</span>
-      </Spinner>
+      {loading === true && <Spinner />}
       <Home boxData={schoolName} />
     </>
   );
