@@ -1,70 +1,66 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Table, Spin } from 'antd';
-import useFetch from "./component/useFetch";
 import 'bootstrap/dist/css/bootstrap.css';
-import 'antd/dist/antd.css'; 
+import Card from 'react-bootstrap/Card'
 
 const App = () => {
+  const [formData,setFormData]=  useState({})
+  const [number,setNumber] =  useState(0)
+  const [skills, setSkills] = useState([]);
 
-  let categoryId = '10'
-  const [page, setPage] = useState(0);
-  const { loadingF, errorF, data } = useFetch(categoryId, page);
-  const loader = useRef(null);
-
-  const handleObserver = useCallback((entries) => {
-    const target = entries[0];
-    if (target.isIntersecting) {
-      setPage((prev) => prev + 1);
+  const addSkill = (type) =>{
+    if(type==="+1"){
+      setNumber(number + 1)
+      setSkills(skills => [...skills,  
+                          <div className="form-group w-85" key={number + 1}>
+                            <label for="skill">Skill {number + 1}</label>
+                            <input type="text" className="form-control w-75" name={`skill_${number + 1}`}  placeholder={`Enter Skill ${number + 1}`} onChange={handleChange}/>
+                        </div>
+     ]);
+    }else{
+      if(number > 0){
+       setSkills(state => state.filter((skills, index) => index !== state.length - 1))
+      }
     }
-  }, []);
+  }
 
-  useEffect(() => {
-    const option = {
-      root: null,
-      rootMargin: "20px",
-      threshold: 0
-    };
+  const handleChange = (e)=>{
+    const {name,value} = e.target
+     setFormData({...formData , [name]:value})
+  }
 
-    const observer = new IntersectionObserver(handleObserver, option);
-    if (loader.current) observer.observe(loader.current);
-  }, [handleObserver]);
+  const handleSubmit=(e)=>{
+    e.preventDefault();
+    console.log('handleSubmit',formData)
+  }
 
-
-  const columns = [
-    {
-      title: 'Title',
-      dataIndex: 'title',
-      key: 'title',
-      render: text => <a>{text}</a>,
-    },
-    {
-      title: 'Url',
-      dataIndex: 'url',
-      key: 'url',
-    },
-    {
-      title: 'Author',
-      dataIndex: 'author',
-      key: 'author',
-    },
-    {
-      title: 'Points',
-      dataIndex: 'points',
-      key: 'points',
-    },
-  ];
 
   return (
-    <>
-    <div style={{height:'50%'}}>
-      <Table columns={columns} dataSource={data} pagination={false}
-        scroll={{ y: '100%' }} />
-      {loadingF && <Spin />}
-      {errorF && <p>Error!</p>}
-      <div ref={loader} />
-      </div>
-    </>
+    <Card style={{ width: '75rem' ,margin:'10px',padding:'10px' }}>
+   <form>
+  <div className="form-group w-85">
+    <label for="title">Title</label>
+    <input type="text" className="form-control w-75" name="title" placeholder="Enter Title" onChange={handleChange}/>
+    </div>
+  <div className="form-group w-85">
+    <label for="skill">Skill</label>
+    <input type="text" className="form-control w-75" name="skill"  placeholder="Enter Skill" onChange={handleChange}/>
+    <button type="button" className="btn btn-danger" style={{float:"right" ,marginRight:'10px'}} onClick={(e)=>addSkill("-1")}>-</button>
+    <button type="button" className="btn btn-success" style={{float:"right",marginRight:'10px'}} onClick={(e)=>addSkill("+1")}>+</button>
+  </div>
+
+  {skills.map((item, i) => (
+    <div key={i}>{item}</div>
+  ))}
+
+
+  <div className="form-group w-85">
+    <label for="description">Description</label>
+     <textarea className="form-control w-75" name="description" rows="3" onChange={handleChange}></textarea>
+  </div>
+  <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
+</form>
+    </Card>
   );
 }
 export default App
