@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
-import { Table, Spin } from 'antd';
+import {DataTable, Spin} from 'lux-components';
 import useFetch from "./component/useFetch";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'antd/dist/antd.css'; 
@@ -58,7 +57,7 @@ const App = () => {
   return (
     <>
     <div style={{height:'50%'}}>
-      <Table columns={columns} dataSource={data} pagination={false}
+      <DataTable columns={columns} dataSource={data} pagination={false}
         scroll={{ y: '100%' }} />
       {loadingF && <Spin />}
       {errorF && <p>Error!</p>}
