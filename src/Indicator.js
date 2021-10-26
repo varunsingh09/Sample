@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import {DataTable, Spin} from 'lux-components';
+import { Table, Spin } from 'antd';
 import useFetch from "./component/useFetch";
-import 'bootstrap/dist/css/bootstrap.css';
-import 'antd/dist/antd.css'; 
+import { useVT } from 'virtualizedtableforantd4';
 
-const App = () => {
+const Indicator = () => {
 
   let categoryId = '10'
   const [page, setPage] = useState(0);
@@ -30,42 +29,38 @@ const App = () => {
   }, [handleObserver]);
 
 
+  const [vt, set_components] = useVT(() => ({ scroll: { y: 600 } }), []);
   const columns = [
     {
-      title: 'Title',
-      dataIndex: 'title',
-      key: 'title',
+      title: 'Body',
+      dataIndex: 'body',
+      key: 'body',
       render: text => <a>{text}</a>,
     },
     {
-      title: 'Url',
-      dataIndex: 'url',
-      key: 'url',
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
-      title: 'Author',
-      dataIndex: 'author',
-      key: 'author',
-    },
-    {
-      title: 'Points',
-      dataIndex: 'points',
-      key: 'points',
-    },
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+    }
   ];
 
-  return (
-    <>
-    <div style={{height:'50%'}}>
-      <DataTable columns={columns} 
-       scroll={{ y: 600 }} // It's important for using VT!!! DO NOT FORGET!!!
-      dataSource={data} 
-      pagination={false} />
-      {loadingF && <Spin />}
-      {errorF && <p>Error!</p>}
-      <div ref={loader} />
-      </div>
-    </>
-  );
+  return <><Table
+    scroll={{ y: 600 }} // It's important for using VT!!! DO NOT FORGET!!!
+    components={vt}
+    columns={columns}
+    dataSource={data}
+    pagination={false}
+    rowKey={obj => obj.id}
+  />
+    {loadingF && <Spin />}
+    {errorF && <p>Error!</p>}
+    <div ref={loader} />
+  </>
 }
-export default App
+
+export default Indicator
